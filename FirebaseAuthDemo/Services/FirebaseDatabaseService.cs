@@ -58,7 +58,7 @@ namespace FirebaseAuthDemo.Services
                                           .Child("favorites")
                                           .OnceAsync<bool>();
 
-                var favorites = result.ToDictionary(o => (o.Key), 
+                var favorites = result.ToDictionary(o => (o.Key),
                                                     o => (o.Object));
 
                 return favorites;
@@ -148,15 +148,13 @@ namespace FirebaseAuthDemo.Services
                                           .Child(recipeId)
                                           .OnceSingleAsync<Rating>();
 
-                if (obj != null)
-                {
-                    // Business logic for handling ratings
-                    UpdateRecipeRating(obj, userId, rating);
-                }
-                else
+                if (obj == null)
                 {
                     obj = new Rating();
                 }
+
+                // Business logic for handling ratings
+                UpdateUserRating(ref obj, userId, rating);
 
                 await _client.Child("recipeRatings")
                              .Child(recipeId)
@@ -174,11 +172,11 @@ namespace FirebaseAuthDemo.Services
             try
             {
                 var obj = await _client.Child("recipeRatings")
-                                          .Child(recipeId)
-                                          .OnceSingleAsync<Rating>();
+                                       .Child(recipeId)
+                                       .OnceSingleAsync<Rating>();
 
                 // Business logic for handling ratings
-                UpdateRecipeRating(obj, userId, newRating);
+                UpdateUserRating(ref obj, userId, newRating);
 
                 await _client.Child("recipeRatings")
                              .Child(recipeId)
@@ -194,11 +192,27 @@ namespace FirebaseAuthDemo.Services
         {
             try
             {
-                await _client.Child("recipeRatings")
-                             .Child(recipeId)
-                             .Child("users")
-                             .Child(userId)
-                             .DeleteAsync();
+                var obj = await _client.Child("recipeRatings")
+                                       .Child(recipeId)
+                                       .OnceSingleAsync<Rating>();
+
+                // Delete entire recipe rating node if one rater
+                if (obj.users.ContainsKey(userId) && obj.users.Count == 1)
+                {
+                    await _client.Child("recipeRatings")
+                                 .Child(recipeId)
+                                 .DeleteAsync();
+                }
+                // Recalculate values and remove rater if multiple raters
+                else if (obj.users.ContainsKey(userId) && obj.users.Count > 1)
+                {
+                    DeleteUserRating(ref obj, userId);
+
+                    await _client.Child("recipeRatings")
+                                 .Child(recipeId)
+                                 .PutAsync(obj);
+                }
+
             }
             catch (Exception)
             {
@@ -211,7 +225,7 @@ namespace FirebaseAuthDemo.Services
         #region Private helper methods
 
         /// <summary>
-        /// Updates the recipe rating for the given user.
+        /// Adds or updates the recipe rating for the given user.
         /// 3 cases:
         /// 1.) Recipe has no ratings.
         /// 2.) Recipe has ratings but user hasn't rated the recipe before.
@@ -219,8 +233,10 @@ namespace FirebaseAuthDemo.Services
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="rating"></param>
-        public void UpdateRecipeRating(Rating rating, string userId, int newRating)
+        private void UpdateUserRating(ref Rating rating, string userId, int newRating)
         {
+            if (rating == null)
+                throw new NullReferenceException();
             if (string.IsNullOrWhiteSpace(userId))
                 throw new ArgumentException("User ID cannot be null or whitespace.");
             if (newRating < 1 || newRating > 5)
@@ -245,6 +261,22 @@ namespace FirebaseAuthDemo.Services
                 }
                 rating.users[userId] = newRating;
                 rating.avgRating = (double)rating.users.Sum(x => x.Value) / (double)(rating.numRatings);
+            }
+        }
+
+        private void DeleteUserRating(ref Rating rating, string userId)
+        {
+            if (rating == null)
+                throw new NullReferenceException();
+            if (string.IsNullOrWhiteSpace(userId))
+                throw new ArgumentException("User ID cannot be null or whitespace.");
+            if (!string.IsNullOrWhiteSpace(userId))
+            {
+
+                rating.users.Remove(userId);
+
+                rating.avgRating = (double)rating.users.Sum(x => x.Value) / (double)(rating.users.Count);
+                rating.numRatings = rating.users.Count;
             }
         }
 

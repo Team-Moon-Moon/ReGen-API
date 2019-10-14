@@ -57,6 +57,6 @@ namespace FirebaseAuthDemo.Models
         //        users[userId] = rating;
         //        avgRating = (double)users.Sum(x => x.Value) / (double)(numRatings);
         //    }
-        }
+        //}
     }
 }

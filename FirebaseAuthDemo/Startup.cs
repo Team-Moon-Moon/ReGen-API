@@ -54,8 +54,8 @@ namespace FirebaseAuthDemo
                         };
                     });
 
-            
 
+            services.AddSingleton<IValidationService, ValidationService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

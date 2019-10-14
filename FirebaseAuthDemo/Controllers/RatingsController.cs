@@ -6,6 +6,7 @@ using FirebaseAuthDemo.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 
 namespace FirebaseAuthDemo.Controllers
 {
@@ -15,13 +16,20 @@ namespace FirebaseAuthDemo.Controllers
     {
         private IDatabaseService _dbClient;
         private IAuthService _authClient;
+        private IValidationService _vClient;
 
-        public RatingsController(IDatabaseService dbClient, IAuthService authClient)
+        public RatingsController(IDatabaseService databaseClient, IAuthService authClient, IValidationService validationClient)
         {
-            _dbClient = dbClient;
+            _dbClient = databaseClient;
             _authClient = authClient;
+            _vClient = validationClient;
         }
 
+        /// <summary>
+        /// Returns a recipe's average rating. 
+        /// </summary>
+        /// <param name="recipeId">The recipe ID.</param>
+        /// <returns></returns>
         [HttpGet("{recipeId}")]
         public async Task<IActionResult> GetAverageRating(string recipeId)
         {
@@ -37,6 +45,11 @@ namespace FirebaseAuthDemo.Controllers
             }
         }
 
+        /// <summary>
+        /// Returns the user's recipe rating, if they rated it. The user must be authenticated.
+        /// </summary>
+        /// <param name="recipeId">The recipe ID.</param>
+        /// <returns></returns>
         [Authorize]
         [HttpGet("{recipeId}")]
         public async Task<IActionResult> GetUserRating(string recipeId)
@@ -44,9 +57,7 @@ namespace FirebaseAuthDemo.Controllers
             try
             {
                 var authHeaderContents = Request.Headers["Authorization"];
-
                 var accessToken = authHeaderContents.ToString().Split(' ')[1];
-
                 var uid = await _authClient.GetUid(accessToken);
 
                 var rating = await _dbClient.GetUserRatingAsync(uid, recipeId);
@@ -60,30 +71,28 @@ namespace FirebaseAuthDemo.Controllers
         }
 
         [Authorize]
-        [HttpGet("monkey")]
-        public async Task<IActionResult> DoAlot(string recipeId)
+        [HttpPut("{recipeId}")]
+        public async Task<IActionResult> AddUserRating(string recipeId, [FromBody]JObject data)
         {
             try
             {
                 var authHeaderContents = Request.Headers["Authorization"];
-
                 var accessToken = authHeaderContents.ToString().Split(' ')[1];
-
                 var uid = await _authClient.GetUid(accessToken);
 
-                recipeId = "monkey";
+                _vClient.ValidateRatingPutRequest(data);
 
-                await _dbClient.AddUserRatingAsync(uid, recipeId, 15);
-
-                var rating = await _dbClient.GetUserRatingAsync(uid, recipeId);
-
-                await _dbClient.DeleteUserRatingAsync(uid, recipeId);
+                await _dbClient.AddUserRatingAsync(uid, recipeId, data["Rating"].ToObject<int>());
 
                 return Ok();
             }
-            catch (Exception)
+            catch (NullReferenceException)
             {
                 return NotFound();
+            }
+            catch (Exception)
+            {
+                return BadRequest();
             }
         }
     }

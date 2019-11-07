@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace FirebaseAuthDemo.Validation
 {
-    public class PutUserRating
+    public class UserRatingForm
     {
         [Required]
-        public int Rating { get; set; }
+        [Range(1, 5)]
+        public int? Rating
+        { get; set; }
     }
 }

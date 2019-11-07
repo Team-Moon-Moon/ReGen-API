@@ -8,9 +8,21 @@ namespace FirebaseAuthDemo.Services
 {
     public interface IDatabaseService
     {
+        #region 'User' Operations
+
+
+
+        #endregion
+
         #region 'Recipe' Operations
 
         Task<Recipe> GetRecipeAsync(string recipeId);
+
+        Task AddRecipeAsync(Recipe recipe);
+
+        Task UpdateRecipeAsync(Recipe recipe);
+
+        Task DeleteRecipeAsync(string recipeID);
 
         #endregion
 
@@ -35,6 +47,20 @@ namespace FirebaseAuthDemo.Services
         Task UpdateUserRatingAsync(string userId, string recipeId, int newRating);
 
         Task DeleteUserRatingAsync(string userId, string recipeId);
+
+        #endregion
+
+        #region 'Reviews' Operations
+
+        Task<Review> GetUserReviewAsync(string userId, string recipeId);
+
+        Task<ReviewsPage> GetReviewsPageAsync(string recipeId, string pageStartKey, int pageSize);
+
+        Task AddReviewAsync(Review review);
+
+        Task UpdateReviewAsync(Review review);
+
+        Task DeleteReviewAsync(string userId, string recipeId);
 
         #endregion
     }

@@ -1,0 +1,239 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>FirebaseAuthDemo</name>
+    </assembly>
+    <members>
+        <member name="T:FirebaseAuthDemo.Controllers.FavoritesController">
+            <summary>
+            Action methods for the recipe favoriting system. The user must be authenticated for all methods.
+            </summary>
+        </member>
+        <member name="M:FirebaseAuthDemo.Controllers.FavoritesController.GetUserFavorites">
+            <summary>
+            [Requires authentication] Returns a collection of the user's favorited recipes.
+            </summary>
+            <returns>HTTP status code 200 with a dictionary of recipe IDs and ONLY 'true' values (no 'false' values), or 204 if no favorites found.</returns>
+            <response code="200">Returns a list of favorited recipe IDs.</response>
+            <response code="204">The user has no recipes favorited.</response>
+            <response code="401">The request is missing an authorization header.</response>
+        </member>
+        <member name="M:FirebaseAuthDemo.Controllers.FavoritesController.AddFavoriteRecipe(System.String)">
+            <summary>
+            [Requires authentication] Adds a recipe to the user's favorites.
+            </summary>
+            <param name="recipeId">The recipe ID.</param>
+            <returns>HTTP status code 204 indicating success.</returns>
+            <response code="204">The request is successful.</response>
+            <response code="401">The request is missing an authorization header.</response>
+            <response code="404">The recipe could not be found.</response>
+        </member>
+        <member name="M:FirebaseAuthDemo.Controllers.FavoritesController.DeleteFavoriteRecipe(System.String)">
+            <summary>
+            [Requires authentication] Deletes a recipe from the user's favorites.
+            </summary>
+            <param name="recipeId">The recipe ID.</param>
+            <returns>HTTP status code 204 indicating success.</returns>
+            <response code="204">The request is successful.</response>
+            <response code="401">The request is missing an authorization header.</response>
+            <response code="404">The recipe could not be found.</response>
+        </member>
+        <member name="M:FirebaseAuthDemo.Controllers.RatingsController.GetAverageRating(System.String)">
+            <summary>
+            Returns a recipe's average rating. 
+            </summary>
+            <param name="recipeId">The recipe ID.</param>
+            <returns>HTTP status code 200 with the average rating as a double.</returns>
+            <response code="200">Returns the recipe's average rating</response>
+            <response code="204">The recipe has no ratings.</response>
+            <response code="404">The recipe could not be found.</response>
+        </member>
+        <member name="M:FirebaseAuthDemo.Controllers.RatingsController.GetUserRating(System.String)">
+            <summary>
+            [Requires authentication] Returns the user's recipe rating, if they rated it.
+            </summary>
+            <param name="recipeId">The recipe ID.</param>
+            <returns>HTTP status code 200 with the user's rating as an integer.</returns>
+            <response code="200">Returns the user's rating for the recipe.</response>
+            <response code="204">The user hasn't rated the recipe.</response>
+            <response code="401">The request is missing an authorization header.</response>
+            <response code="404">The recipe could not be found.</response>
+        </member>
+        <member name="M:FirebaseAuthDemo.Controllers.RatingsController.AddUserRating(System.String,FirebaseAuthDemo.Validation.UserRatingForm)">
+            <summary>
+            [Requires authentication] Creates a new recipe rating for the user.
+            </summary>
+            <param name="recipeId">The recipe ID.</param>
+            <param name="form">The rating as a JSON body.</param>
+            <returns>HTTP status code 200 with no content.</returns>
+            <response code="204">The request is successful.</response>
+            <response code="400">The request body is invalid.</response>
+            <response code="401">The request is missing an authorization header.</response>
+            <response code="404">The recipe could not be found.</response>
+            <response code="409">A rating for this user already exists.</response>
+        </member>
+        <member name="M:FirebaseAuthDemo.Controllers.RatingsController.UpdateUserRating(System.String,FirebaseAuthDemo.Validation.UserRatingForm)">
+            <summary>
+            [Requires authentication] Updates the user's existing recipe rating.
+            </summary>
+            <param name="recipeId">The recipe ID.</param>
+            <param name="form">The new rating as a JSON body</param>
+            <returns>HTTP status code 200 with no content.</returns>
+            <response code="204">The request is successful.</response>
+            <response code="400">The request body is invalid.</response>
+            <response code="401">The request is missing an authorization header.</response>
+            <response code="404">The recipe could not be found.</response>
+        </member>
+        <member name="M:FirebaseAuthDemo.Controllers.RatingsController.DeleteUserRating(System.String)">
+            <summary>
+            Unimplemented method. Ratings should not be deleted because submitting/retrieving a review requires a rating.
+            </summary>
+            <param name="recipeId">The recipe ID.</param>
+            <returns>HTTP status code 403 indicating access denied.</returns>
+        </member>
+        <member name="M:FirebaseAuthDemo.Controllers.RecipesController.GetRecipe(System.String)">
+            <summary>
+            Finds a recipe by ID.
+            </summary>
+            <param name="recipeId">The recipe ID.</param>
+            <returns>Http status code 200 with a Recipe object, or 204 if none found.</returns>
+            <response code="200">Returns a Recipe object.</response>
+            <response code="204">No Recipe found.</response>
+        </member>
+        <member name="M:FirebaseAuthDemo.Controllers.RecipesController.AddRecipe(FirebaseAuthDemo.Utils.Validation.Http_Request_Body_Schemas.RecipeForm)">
+            <summary>
+            [Requires authentication] Adds a recipe to ReGen.
+            </summary>
+            <param name="recipeForm">The formatted request body as JSON.</param>
+            <returns>Http status code 204 indicating success.</returns>
+            <response code="204">The request is successful.</response>
+            <response code="400">The request body is invalid.</response>
+            <response code="401">The request is missing an authorization header.</response>
+        </member>
+        <member name="M:FirebaseAuthDemo.Controllers.RecipesController.UpdateRecipe(System.String,FirebaseAuthDemo.Utils.Validation.Http_Request_Body_Schemas.RecipeForm)">
+            <summary>
+            [Requires authentication] Updates the user's recipe by ID.
+            </summary>
+            <param name="recipeId">The recipe ID.</param>
+            <param name="recipeForm">The formatted request body as JSON.</param>
+            <returns>Http status code 204 indicating success.</returns>
+            <response code="204">The request is successful.</response>
+            <response code="400">The request body is invalid.</response>
+            <response code="401">The request is missing an authorization header.</response>
+            <response code="404">The recipe could not be found.</response>
+        </member>
+        <member name="M:FirebaseAuthDemo.Controllers.RecipesController.DeleteRecipe(System.String)">
+            <summary>
+            [Requires authentication] Deletes the user's recipe by ID.
+            </summary>
+            <param name="recipeId">The recipe ID.</param>
+            <returns>Http status code 204 indicating success.</returns>
+            <response code="204">The request is successful.</response>
+            <response code="401">The request is missing an authorization header, or the user does not own the recipe.</response>
+            <response code="404">The recipe could not be found.</response>
+        </member>
+        <member name="M:FirebaseAuthDemo.Controllers.ReviewsController.GetReviews(System.String,System.String,System.Int32)">
+            <summary>
+            Returns a single page of reviews for a recipe.
+            </summary>
+            <param name="recipeId">The recipe ID.</param>
+            <param name="start">The key to start at.</param>
+            <param name="size">The number of reviews to return. (min: 1, max: 100, default: 5)</param>
+            <returns>A page of reviews.</returns>
+            <response code="200">Returns a list of reviews for a recipe.</response>
+            <response code="204">No reviews found for the recipe.</response>
+            <response code="400">One or more query parameter(s) are invalid.</response>
+            <response code="404">No recipe found.</response>
+        </member>
+        <member name="M:FirebaseAuthDemo.Controllers.ReviewsController.CreateReview(System.String,FirebaseAuthDemo.Utils.Validation.Http_Request_Body_Schemas.ReviewForm)">
+            <summary>
+            [Requires authentication] Adds the user's review for a recipe to ReGen.
+            </summary>
+            <param name="recipeId">The recipe ID.</param>
+            <param name="review">The formatted request body as JSON.</param>
+            <returns>Http status code 204 indicating success.</returns>
+            <response code="204">The request is successful.</response>
+            <response code="400">The request body is invalid.</response>
+            <response code="401">The request is missing an authorization header.</response>
+            <response code="404">The recipe could not be found.</response>
+            <response code="409">A review for this user already exists.</response>
+        </member>
+        <member name="M:FirebaseAuthDemo.Controllers.ReviewsController.UpdateReview(System.String,FirebaseAuthDemo.Utils.Validation.Http_Request_Body_Schemas.ReviewForm)">
+            <summary>
+            [Requires authentication] Updates the user's review for a recipe in ReGen.
+            </summary>
+            <param name="review">The formatted request body as JSON.</param>
+            <returns>Http status code 204 indicating success.</returns>
+            <response code="204">The request is successful.</response>
+            <response code="400">The request body is invalid.</response>
+            <response code="401">The request is missing an authorization header.</response>
+            <response code="404">The recipe could not be found, or a review for this user could not be found.</response>
+        </member>
+        <member name="M:FirebaseAuthDemo.Controllers.ReviewsController.DeleteReview(System.String)">
+            <summary>
+            [Requires authentication] Deletes the user's review for a recipe in ReGen.
+            </summary>
+            <param name="recipeId">The recipe ID.</param>
+            <returns>Http status code 204 indicating success.</returns>
+            <response code="204">The request is successful.</response>
+            <response code="401">The request is missing an authorization header.</response>
+            <response code="404">The recipe could not be found, or a review for this user could not be found.</response>
+        </member>
+        <member name="M:FirebaseAuthDemo.Controllers.SearchController.SearchRecipes(System.String,FirebaseAuthDemo.Utils.Validation.Http_Request_Body_Schemas.SearchForm)">
+            <summary>
+            Returns a list of recipes matching the query.
+            </summary>
+            <remarks>For unfiltered searches, include an JSON empty request body.</remarks>
+            <param name="q">The query term(s).</param>
+            <param name="searchForm">The request body as JSON.</param>
+            <returns>A list of Recipe objects.</returns>
+            <response code="200">Returns a list of Recipe objects.</response>
+            <response code="204">No recipes found.</response>
+            <response code="400">The query parameter is missing, or the request body is invalid.</response>
+        </member>
+        <member name="M:FirebaseAuthDemo.Models.Rating.#ctor">
+            <summary>
+            Construct a new rating with default values.
+            </summary>
+        </member>
+        <member name="M:FirebaseAuthDemo.Services.FirebaseDatabaseService.GetUserFavoritesAsync(System.String)">
+            <summary>
+            An asynchronous operation to retrieve a user's favorited recipes.
+            The task result consists of dictionary of recipe ID keys and boolean 
+            values (indicating if the recipe was favorited).
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:FirebaseAuthDemo.Services.FirebaseDatabaseService.UpdateUserRating(System.String,FirebaseAuthDemo.Models.Rating@,System.Int32)">
+            <summary>
+            Adds or updates the recipe rating for the given user.
+            3 cases:
+            1.) Recipe has no ratings.
+            2.) Recipe has ratings but user hasn't rated the recipe before.
+            3.) Recipe has ratings and user has already rated the recipe.
+            </summary>
+            <param name="userId"></param>
+            <param name="rating"></param>
+        </member>
+        <member name="T:FirebaseAuthDemo.Services.ValidationService">
+            <summary>
+            Validates REST API request bodies using NJsonSchema.
+            Documentation: https://github.com/RicoSuter/NJsonSchema
+            </summary>
+        </member>
+        <member name="M:FirebaseAuthDemo.Startup.CreateElasticClient(FirebaseAuthDemo.Configurations.Elasticsearch.ElasticsearchConfiguration)">
+            <summary>
+            Creates a configured high-level client instance to use the Elasticsearch API.
+            </summary>
+            <param name="config">A strongly-typed configuration object.</param>
+            <returns></returns>
+        </member>
+        <member name="M:FirebaseAuthDemo.Startup.InitializeSearchService(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds a new Elasticsearch service to the DI container. Service configurations are read from a config file.
+            </summary>
+            <param name="services">The service provider.</param>
+        </member>
+    </members>
+</doc>

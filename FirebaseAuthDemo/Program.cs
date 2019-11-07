@@ -19,6 +19,13 @@ namespace FirebaseAuthDemo
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>();
+                .UseStartup<Startup>()
+                //.UseUrls(
+                //"https://*:5566",
+                //"https://*:5567",
+                //"https://*:5568",
+                //"https://*:5569"
+                //)
+            ;
     }
 }

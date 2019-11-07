@@ -1,4 +1,6 @@
-﻿using FirebaseAuthDemo.Validation;
+﻿using FirebaseAuthDemo.Models;
+using FirebaseAuthDemo.Utils.Validation.Http_Request_Body_Schemas;
+using FirebaseAuthDemo.Validation;
 using Newtonsoft.Json.Linq;
 using NJsonSchema;
 using System;
@@ -14,17 +16,43 @@ namespace FirebaseAuthDemo.Services
     /// </summary>
     public class ValidationService : IValidationService
     {
-        public void ValidateRatingPutRequest(JObject data)
+        public void ValidateUserRatingForm(JObject data)
         {
-            var schema =
-                JsonSchema.FromType<PutUserRating>();
-            //var schemaData = schema.ToJson();
+            var schema = JsonSchema.FromType<UserRatingForm>();
+
             var errors = schema.Validate(data.ToString());
+            
+            if (errors.Count > 0)
+            {
+                var e = new FormatException("Badly formatted JSON body");
+                e.Data.Add("ValidationErrors", errors);
+                throw e;
+            }
 
-            //foreach (var error in errors)
-            //    Console.WriteLine(error.Path + ": " + error.Kind);
+            return;
+        }
 
-            //schema = await JsonSchema.FromJsonAsync(schemaData);
+        public void ValidateRecipeForm(JObject recipe)
+        {
+            var schema = JsonSchema.FromType<Recipe>();
+
+            var errors = schema.Validate(recipe.ToString());
+
+            if (errors.Count > 0)
+            {
+                var e = new FormatException("Badly formatted JSON body");
+                e.Data.Add("ValidationErrors", errors);
+                throw e;
+            }
+
+            return;
+        }
+
+        public void ValidateReviewForm(JObject review)
+        {
+            var schema = JsonSchema.FromType<ReviewForm>();
+
+            var errors = schema.Validate(review.ToString());
 
             if (errors.Count > 0)
             {

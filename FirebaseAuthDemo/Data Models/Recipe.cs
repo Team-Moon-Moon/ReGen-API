@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -9,30 +10,43 @@ namespace FirebaseAuthDemo.Models
     {
         #region Properties
 
+        [Required]
         public string Key
         { get; set; }
 
+        [Required]
+        public string AuthorId
+        { get; set; }
+
+        [Required]
         public string Name
         { get; set; }
 
-        public int Calories
+        [Required]
+        public int? Calories
         { get; set; }
 
-        public int PrepTimeMinutes
+        [Required]
+        public int? PrepTimeMinutes
         { get; set; }
 
-        public Ingredient[] Ingredients
+        [Required]
+        public IEnumerable<Ingredient> Ingredients
         { get; set; }
 
-        public string[] Steps
+        [Required]
+        public IEnumerable<string> Steps
         { get; set; }
 
+        [Obsolete]
         public int StarRating
         { get; set; }
 
-        //public string[] Reviews; {get;
+        [Obsolete]
+        public string[] Reviews
+        { get; set; }
 
-        public string[] Tags
+        public IEnumerable<string> Tags
         { get; set; }
 
         public string ImageReferencePath
@@ -77,6 +91,7 @@ namespace FirebaseAuthDemo.Models
 
         //}
 
+        
         public override string ToString()
         {
             String recipeString = "";

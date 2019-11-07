@@ -8,6 +8,10 @@ namespace FirebaseAuthDemo.Services
 {
     public interface IValidationService
     {
-        void ValidateRatingPutRequest(JObject data);
+        void ValidateUserRatingForm(JObject data);
+
+        void ValidateRecipeForm(JObject recipe);
+
+        void ValidateReviewForm(JObject review);
     }
 }

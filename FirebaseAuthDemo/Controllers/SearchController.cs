@@ -28,7 +28,29 @@ namespace FirebaseAuthDemo.Controllers
         }
 
         /// <summary>
-        /// Returns a list of recipes matching the query.
+        /// Returns a list of recipes matching the query. An unfiltered search (no preferences) is performed.
+        /// </summary>
+        /// <param name="q">The query term(s).</param>
+        /// <returns>A list of Recipe objects.</returns>
+        /// <response code="200">Returns a list of Recipe objects.</response>
+        /// <response code="204">No recipes found.</response>
+        /// <response code="400">The query parameter is missing, or the request body is invalid.</response>
+        [HttpGet]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> SearchRecipes([FromQuery]string q = "")
+        {
+            var results = await _searchClient.SearchUnfilteredAsync(q);
+
+            if (results != null)
+                return Ok(results);
+
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Returns a list of recipes matching the query. A filtered search (with preferences) is performed.
         /// </summary>
         /// <remarks>For unfiltered searches, include an JSON empty request body.</remarks>
         /// <param name="q">The query term(s).</param>

@@ -45,9 +45,9 @@ namespace FirebaseAuthDemo.Services
                 throw searchResponse.OriginalException;
             }
 
-            if (searchResponse.Documents == null)
+            if (searchResponse.Documents == null || searchResponse.Documents.Count < 1)
             {
-                throw new NoResultsFoundException($"No results found for '{recipeName}'.");
+                return null;
             }
 
             return searchResponse.Documents;
@@ -67,7 +67,7 @@ namespace FirebaseAuthDemo.Services
             byte[] b = new byte[60000];
             using (System.IO.MemoryStream ms = new System.IO.MemoryStream(b))
             {
-                _elasticClient.RequestResponseSerializer.Serialize(/*combinedQuery*/ searchRequest, ms);
+                _elasticClient.RequestResponseSerializer.Serialize(searchRequest, ms);
             }
             var rawJson = System.Text.Encoding.Default.GetString(b).Trim('\0');
 
@@ -80,9 +80,9 @@ namespace FirebaseAuthDemo.Services
                 throw searchResponse.OriginalException;
             }
 
-            if (searchResponse.Documents == null)
+            if (searchResponse.Documents == null || searchResponse.Documents.Count < 1)
             {
-                throw new NoResultsFoundException($"No results found for '{recipeName}'.");
+                return null;
             }
 
             return searchResponse.Documents;
@@ -103,28 +103,6 @@ namespace FirebaseAuthDemo.Services
 
             return searchRequest;
         }
-
-        //private ISearchRequest BuildFilteredSearchRequest(string recipeName, IEnumerable<string> includeTags, IEnumerable<string> excludeTags)
-        //{
-        //    var must = CreateMustClause(includeTags);
-        //    var mustNot = CreateMustNotClause(excludeTags);
-        //    var should = CreateShouldClause(recipeName);
-
-        //    var boolQuery =
-        //        new BoolQuery
-        //        {
-        //            Must = new QueryContainer[] { must },
-        //            MustNot = new QueryContainer[] { mustNot },
-        //            Should = new QueryContainer[] { should }
-        //        };
-
-        //    var searchRequest = new SearchRequest
-        //    {
-        //        Query = boolQuery
-        //    };
-
-        //    return searchRequest;
-        //}
 
         private ISearchRequest BuildFilteredSearchRequest(string recipeName, IEnumerable<string> includeTags, IEnumerable<string> excludeTags)
         {

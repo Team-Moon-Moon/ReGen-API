@@ -44,7 +44,7 @@
             </summary>
             <param name="recipeId">The recipe ID.</param>
             <returns>HTTP status code 200 with the average rating as a double.</returns>
-            <response code="200">Returns the recipe's average rating</response>
+            <response code="200">Returns the recipe's average rating.</response>
             <response code="204">The recipe has no ratings.</response>
             <response code="404">The recipe could not be found.</response>
         </member>
@@ -179,9 +179,19 @@
             <response code="401">The request is missing an authorization header.</response>
             <response code="404">The recipe could not be found, or a review for this user could not be found.</response>
         </member>
+        <member name="M:FirebaseAuthDemo.Controllers.SearchController.SearchRecipes(System.String)">
+            <summary>
+            Returns a list of recipes matching the query. An unfiltered search (no preferences) is performed.
+            </summary>
+            <param name="q">The query term(s).</param>
+            <returns>A list of Recipe objects.</returns>
+            <response code="200">Returns a list of Recipe objects.</response>
+            <response code="204">No recipes found.</response>
+            <response code="400">The query parameter is missing, or the request body is invalid.</response>
+        </member>
         <member name="M:FirebaseAuthDemo.Controllers.SearchController.SearchRecipes(System.String,FirebaseAuthDemo.Utils.Validation.Http_Request_Body_Schemas.SearchForm)">
             <summary>
-            Returns a list of recipes matching the query.
+            Returns a list of recipes matching the query. A filtered search (with preferences) is performed.
             </summary>
             <remarks>For unfiltered searches, include an JSON empty request body.</remarks>
             <param name="q">The query term(s).</param>

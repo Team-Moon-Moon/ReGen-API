@@ -33,7 +33,7 @@ namespace FirebaseAuthDemo.Controllers
         /// </summary>
         /// <param name="recipeId">The recipe ID.</param>
         /// <returns>HTTP status code 200 with the average rating as a double.</returns>
-        /// <response code="200">Returns the recipe's average rating</response>
+        /// <response code="200">Returns the recipe's average rating.</response>
         /// <response code="204">The recipe has no ratings.</response>
         /// <response code="404">The recipe could not be found.</response>
         [HttpGet("{recipeId}/average")]

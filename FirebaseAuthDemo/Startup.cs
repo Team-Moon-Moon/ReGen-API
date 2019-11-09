@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Firebase.Database;
 using FirebaseAdmin;
@@ -60,11 +61,12 @@ namespace FirebaseAuthDemo
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(options =>
                     {
-                        options.Authority = $"https://securetoken.google.com/{projectId}";
-                        options.TokenValidationParameters = new TokenValidationParameters
+                        options.Authority = $"{Configuration.GetSection("OpenID").GetValue<string>("Authority")}/{projectId}";
+                        options.TokenValidationParameters =
+                        new TokenValidationParameters
                         {
                             ValidateIssuer = true,
-                            ValidIssuer = $"https://securetoken.google.com/{projectId}",
+                            ValidIssuer = $"{Configuration.GetSection("OpenID").GetValue<string>("Authority")}/{projectId}",
                             ValidateAudience = true,
                             ValidAudience = projectId,
                             ValidateLifetime = true
@@ -81,7 +83,7 @@ namespace FirebaseAuthDemo
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = Configuration.GetSection("OpenAPI").GetValue<string>("Title"), Version = Configuration.GetSection("OpenAPI").GetValue<string>("Version") });
 
-                var filePath = Path.Combine(System.AppContext.BaseDirectory, "FirebaseAuthDemo.xml");
+                var filePath = Path.Combine(System.AppContext.BaseDirectory, $"{Configuration.GetValue<string>("ProjectName")}.xml");
                 c.IncludeXmlComments(filePath);
             });
         }
@@ -105,7 +107,11 @@ namespace FirebaseAuthDemo
             // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "ReGen API V1");
+                c.SwaggerEndpoint(
+                    Configuration.GetSection("Swagger").GetValue<string>("Endpoint"), 
+                    Configuration.GetSection("Swagger").GetValue<string>("Name")
+                );
+
                 c.RoutePrefix = string.Empty;
             });
 

@@ -132,6 +132,17 @@
             <response code="401">The request is missing an authorization header, or the user does not own the recipe.</response>
             <response code="404">The recipe could not be found.</response>
         </member>
+        <member name="M:FirebaseAuthDemo.Controllers.ReviewsController.GetPersonalReview(System.String)">
+            <summary>
+            [Requires authentication] Returns the user's review for a recipe.
+            </summary>
+            <param name="recipeId">The recipe ID.</param>
+            <returns>The user's personal review for a recipe.</returns>
+            <response code="200">Returns the user's review for a recipe.</response>
+            <response code="204">No review found for the user on the queried recipe.</response>
+            <response code="400">One or more query parameter(s) are invalid.</response>
+            <response code="404">No recipe found.</response>
+        </member>
         <member name="M:FirebaseAuthDemo.Controllers.ReviewsController.GetReviews(System.String,System.String,System.Int32)">
             <summary>
             Returns a single page of reviews for a recipe.

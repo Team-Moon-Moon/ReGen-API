@@ -31,6 +31,38 @@ namespace FirebaseAuthDemo.Controllers
             _authClient = authClient;
         }
 
+
+
+        /// <summary>
+        /// [Requires authentication] Returns the user's review for a recipe.
+        /// </summary>
+        /// <param name="recipeId">The recipe ID.</param>
+        /// <returns>The user's personal review for a recipe.</returns>
+        /// <response code="200">Returns the user's review for a recipe.</response>
+        /// <response code="204">No review found for the user on the queried recipe.</response>
+        /// <response code="400">One or more query parameter(s) are invalid.</response>
+        /// <response code="404">No recipe found.</response>
+        [Authorize]
+        [HttpGet("{recipeId}/self")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetPersonalReview(string recipeId)
+        {
+            var authHeaderContents = Request.Headers["Authorization"];
+            var accessToken = authHeaderContents.ToString().Split(' ')[1];
+            var uid = await _authClient.GetUid(accessToken);
+
+            var review = await _reviewClient.GetUserReviewAsync(uid, recipeId);
+            if (review != null)
+            {
+                return Ok(review);
+            }
+
+            return NoContent();
+        }
+
         /// <summary>
         /// Returns a single page of reviews for a recipe.
         /// </summary>

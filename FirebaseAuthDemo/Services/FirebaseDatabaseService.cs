@@ -2,6 +2,7 @@
 using Firebase.Database.Query;
 using FirebaseAuthDemo.Models;
 using FirebaseAuthDemo.Utils.Custom_Exceptions;
+using FirebaseAuthDemo.Utils.Validation.Http_Request_Body_Schemas;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
 using System;
@@ -66,7 +67,7 @@ namespace FirebaseAuthDemo.Services
             {
                 await _client.Child("recipes")
                              .Child(recipe.Key)
-                             .PostAsync<Recipe>(recipe);
+                             .PatchAsync<Recipe>(recipe);
             }
             catch (Exception)
             {
@@ -196,7 +197,14 @@ namespace FirebaseAuthDemo.Services
                                              .Child(recipeId)
                                              .Child("avgRating")
                                              .OnceSingleAsync<double>();
+
+
+
                 return avgRating;
+            }
+            catch (FirebaseException) // No ratings
+            {
+                return 0;
             }
             catch (Exception)
             {
@@ -214,6 +222,10 @@ namespace FirebaseAuthDemo.Services
                                           .Child(userId)
                                           .OnceSingleAsync<int>();
                 return rating;
+            }
+            catch (FirebaseException) // No ratings
+            {
+                return 0;
             }
             catch (Exception)
             {
@@ -357,7 +369,7 @@ namespace FirebaseAuthDemo.Services
                                               .OrderBy("UserId")
                                               .EqualTo(userId)
                                               .OnceSingleAsync<Dictionary<string, Dictionary<string, dynamic>>>();
-
+                
                 if (reviewJson == null || !reviewJson.Any())
                 {
                     //throw new NoResultsFoundException($"No review found for user ID: {userId} on recipe ID: {recipeId}.");
@@ -366,6 +378,8 @@ namespace FirebaseAuthDemo.Services
 
                 var dict = reviewJson.First().Value;
 
+                var rating = await GetUserRatingAsync(userId, recipeId);
+
                 var review =
                     new Review
                     {
@@ -373,7 +387,8 @@ namespace FirebaseAuthDemo.Services
                         RecipeId = recipeId,
                         UserId = dict["UserId"],
                         Content = dict["Content"],
-                        Timestamp = dict["Timestamp"]
+                        Timestamp = dict["Timestamp"],
+                        Rating = rating
                     };
 
                 return review;

@@ -28,15 +28,20 @@ namespace FirebaseAuthDemo.Services
         {
             try
             {
-                var review = await _dbClient.GetUserReviewAsync(recipeId, userId);
+                var review = await _dbClient.GetUserReviewAsync(userId, recipeId);
 
-                return new ReviewViewModel
+                if (review != null)
                 {
-                    Author = review.UserId,
-                    Content = review.Content,
-                    Timestamp = review.Timestamp,
-                    Rating = review.Rating
-                };
+                    return new ReviewViewModel
+                    {
+                        Author = review.UserId,
+                        Content = review.Content,
+                        Timestamp = review.Timestamp,
+                        Rating = review.Rating
+                    };
+                }
+
+                return null;
             }
             catch (Exception)
             {

@@ -41,7 +41,7 @@ namespace FirebaseAuthDemo.Services
                 var recipe =
                     new Recipe
                     {
-                        AuthorId = userId,
+                        AuthorID = userId,
                         Name = recipeForm.Name,
                         Calories = recipeForm.Calories,
                         PrepTimeMinutes = recipeForm.PrepTimeMinutes,
@@ -70,7 +70,7 @@ namespace FirebaseAuthDemo.Services
                     throw new NoResultsFoundException($"No recipe found for ID: {recipeId}");
                 }
 
-                if (userId == recipe.AuthorId)
+                if (userId == recipe.AuthorID)
                 {
                     // To-do: use AutoMapper
                     recipe.Calories = recipeForm.Calories;
@@ -106,7 +106,7 @@ namespace FirebaseAuthDemo.Services
                     throw new NoResultsFoundException($"No recipe found for ID: {recipeId}");
                 }
 
-                if (userId == recipe.AuthorId)
+                if (userId == recipe.AuthorID)
                 {
                     await _dbClient.DeleteRecipeAsync(recipe.Key);
                 }

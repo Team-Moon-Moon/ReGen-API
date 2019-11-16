@@ -16,76 +16,112 @@ namespace FirebaseAuthDemo.Services
     {
         private ElasticsearchConfiguration _config;
         private ElasticClient _elasticClient;
+        private IDatabaseService _dbClient;
 
-        public ElasticsearchService(ElasticsearchConfiguration config, ElasticClient client)
+        public ElasticsearchService(ElasticsearchConfiguration config, ElasticClient client, IDatabaseService dbClient)
         {
             _config = config;
             _elasticClient = client;
+            _dbClient = dbClient;
         }
 
-        public async Task<IEnumerable<object>> SearchUnfilteredAsync(string recipeName)
+        public async Task<IEnumerable<Recipe>> SearchUnfilteredAsync(string recipeName)
         {
-            var searchRequest = BuildUnfilteredSearchRequest(recipeName);
-
-            #region For debugging: shows the raw request body
-
-            byte[] b = new byte[60000];
-            using (System.IO.MemoryStream ms = new System.IO.MemoryStream(b))
+            try
             {
-                _elasticClient.RequestResponseSerializer.Serialize(searchRequest, ms);
+                var searchRequest = BuildUnfilteredSearchRequest(recipeName);
+
+                #region For debugging: shows the raw request body
+
+                byte[] b = new byte[60000];
+                using (System.IO.MemoryStream ms = new System.IO.MemoryStream(b))
+                {
+                    _elasticClient.RequestResponseSerializer.Serialize(searchRequest, ms);
+                }
+                var rawJson = System.Text.Encoding.Default.GetString(b).Trim('\0');
+
+                #endregion
+
+                var searchResponse = await _elasticClient.SearchAsync<Recipe>(searchRequest);
+
+                if (!searchResponse.IsValid)
+                {
+                    throw searchResponse.OriginalException;
+                }
+
+                if (searchResponse.Documents == null || searchResponse.Documents.Count < 1)
+                {
+                    return null;
+                }
+
+                List<Task<Recipe>> tasks = new List<Task<Recipe>>(
+                    searchResponse.Documents
+                                  .Select(d =>
+                                    _dbClient.GetRecipeAsync(d.Key)
+                    )
+                );
+
+                var recipes = await Task.WhenAll(tasks);
+
+                return recipes;
             }
-            var rawJson = System.Text.Encoding.Default.GetString(b).Trim('\0');
-
-            #endregion
-
-            var searchResponse = await _elasticClient.SearchAsync<dynamic>(searchRequest);
-
-            if (!searchResponse.IsValid)
+            catch (Exception e)
             {
-                throw searchResponse.OriginalException;
+                var error = e.Message;
+                throw;
             }
-
-            if (searchResponse.Documents == null || searchResponse.Documents.Count < 1)
-            {
-                return null;
-            }
-
-            return searchResponse.Documents;
         }
 
-        public async Task<IEnumerable<object>> SearchFilteredAsync(string recipeName, IEnumerable<string> includeTags, IEnumerable<string> excludeTags)
+        public async Task<IEnumerable<Recipe>> SearchFilteredAsync(string recipeName, IEnumerable<string> includeTags, IEnumerable<string> excludeTags)
         {
-            if (recipeName == null)
+            try
             {
-                throw new ArgumentException("'q' cannot be null.");
+                if (recipeName == null)
+                {
+                    throw new ArgumentException("'q' cannot be null.");
+                }
+
+                var searchRequest = BuildFilteredSearchRequest(recipeName, includeTags, excludeTags);
+
+                #region **For debugging: shows the raw request body**
+
+                byte[] b = new byte[60000];
+                using (System.IO.MemoryStream ms = new System.IO.MemoryStream(b))
+                {
+                    _elasticClient.RequestResponseSerializer.Serialize(searchRequest, ms);
+                }
+                var rawJson = System.Text.Encoding.Default.GetString(b).Trim('\0');
+
+                #endregion
+
+                var searchResponse = await _elasticClient.SearchAsync<Recipe>(searchRequest);
+
+                if (!searchResponse.IsValid)
+                {
+                    throw searchResponse.OriginalException;
+                }
+
+                if (searchResponse.Documents == null || searchResponse.Documents.Count < 1)
+                {
+                    return null;
+                }
+
+                List<Task<Recipe>> tasks = new List<Task<Recipe>>(
+                        searchResponse.Documents
+                                      .Select(d =>
+                                        _dbClient.GetRecipeAsync(d.Key)
+                        )
+                    );
+
+                var recipes = await Task.WhenAll(tasks);
+
+                return recipes;
             }
-
-            var searchRequest = BuildFilteredSearchRequest(recipeName, includeTags, excludeTags);
-
-            #region **For debugging: shows the raw request body**
-
-            byte[] b = new byte[60000];
-            using (System.IO.MemoryStream ms = new System.IO.MemoryStream(b))
+            catch (Exception e)
             {
-                _elasticClient.RequestResponseSerializer.Serialize(searchRequest, ms);
+                var error = e.Message;
+                throw;
             }
-            var rawJson = System.Text.Encoding.Default.GetString(b).Trim('\0');
-
-            #endregion
-
-            var searchResponse = await _elasticClient.SearchAsync<dynamic>(searchRequest);
-
-            if (!searchResponse.IsValid)
-            {
-                throw searchResponse.OriginalException;
-            }
-
-            if (searchResponse.Documents == null || searchResponse.Documents.Count < 1)
-            {
-                return null;
-            }
-
-            return searchResponse.Documents;
         }
 
         #region Private helper methods

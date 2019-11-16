@@ -8,8 +8,8 @@ namespace FirebaseAuthDemo.Services
 {
     public interface ISearchService
     {
-        Task<IEnumerable<object>> SearchUnfilteredAsync(string recipeName);
+        Task<IEnumerable<Recipe>> SearchUnfilteredAsync(string recipeName);
 
-        Task<IEnumerable<object>> SearchFilteredAsync(string recipeName, IEnumerable<string> includes, IEnumerable<string> excludes);
+        Task<IEnumerable<Recipe>> SearchFilteredAsync(string recipeName, IEnumerable<string> includes, IEnumerable<string> excludes);
     }
 }

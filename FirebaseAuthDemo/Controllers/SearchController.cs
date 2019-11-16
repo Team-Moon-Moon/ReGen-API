@@ -43,7 +43,7 @@ namespace FirebaseAuthDemo.Controllers
         {
             var results = await _searchClient.SearchUnfilteredAsync(q);
 
-            if (results != null)
+            if (results != null && results.Count() > 0)
                 return Ok(results);
 
             return NoContent();
@@ -67,7 +67,7 @@ namespace FirebaseAuthDemo.Controllers
         {
             var results = await _searchClient.SearchFilteredAsync(q, searchForm?.IncludeTags, searchForm?.ExcludeTags);
 
-            if (results != null)
+            if (results != null && results.Count() > 0)
                 return Ok(results);
 
             return NoContent();

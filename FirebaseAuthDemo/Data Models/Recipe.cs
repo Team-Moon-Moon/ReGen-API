@@ -11,14 +11,17 @@ namespace FirebaseAuthDemo.Models
         #region Properties
 
         [Required]
+        [Nest.Text(Name = "Key")]
         public string Key
         { get; set; }
 
         [Required]
-        public string AuthorId
+        [Nest.Text(Name = "AuthorID")]
+        public string AuthorID
         { get; set; }
 
         [Required]
+        [Nest.Text(Name = "name")]
         public string Name
         { get; set; }
 
@@ -31,6 +34,7 @@ namespace FirebaseAuthDemo.Models
         { get; set; }
 
         [Required]
+        [Nest.PropertyName("ingredients")]
         public IEnumerable<Ingredient> Ingredients
         { get; set; }
 
@@ -46,6 +50,7 @@ namespace FirebaseAuthDemo.Models
         //public string[] Reviews
         //{ get; set; }
 
+        [Nest.PropertyName("tags")]
         public IEnumerable<string> Tags
         { get; set; }
 

@@ -13,11 +13,13 @@ namespace FirebaseAuthDemo.Models
 
         [Required]
         [StringLength(30, MinimumLength = 1)]
+        [Nest.Text(Name = "IngredientName")]
         public string IngredientName
         { get; set; }
 
         [Required]
         [StringLength(30, MinimumLength = 1)]
+        [Nest.Text(Name = "IngredientAmount")]
         public string IngredientAmount
         { get; set; }
 

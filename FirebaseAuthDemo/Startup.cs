@@ -193,7 +193,9 @@ namespace FirebaseAuthDemo
                 new ConnectionSettings(new Uri(config.Uri))
                     .BasicAuthentication(config.Auth.Username, config.Auth.Password)
                     .DefaultMappingFor<RecipeLite>(s => s.IndexName(config.Index));
+
             elasticConnectionSettings.DefaultIndex(config.Index);
+
             return new ElasticClient(elasticConnectionSettings);
         }
 

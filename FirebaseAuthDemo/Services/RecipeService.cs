@@ -34,7 +34,7 @@ namespace FirebaseAuthDemo.Services
             }
         }
 
-        public async Task CreateRecipeAsync(string userId, RecipeForm recipeForm)
+        public async Task<Recipe> CreateRecipeAsync(string userId, RecipeForm recipeForm)
         {
             try
             {
@@ -51,7 +51,7 @@ namespace FirebaseAuthDemo.Services
                         RootImagePath = recipeForm.RootImagePath
                     };
 
-                await _dbClient.AddRecipeAsync(recipe);
+                return await _dbClient.AddRecipeAsync(recipe);
             }
             catch (Exception)
             {

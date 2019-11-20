@@ -48,12 +48,19 @@ namespace FirebaseAuthDemo.Services
             }
         }
 
-        public async Task AddRecipeAsync(Recipe recipe)
+        public async Task<Recipe> AddRecipeAsync(Recipe recipe)
         {
             try
             {
-                await _client.Child("recipes")
-                             .PostAsync<Recipe>(recipe);
+                // To-do: handle a user submitting a recipe with a name for one they already created.
+
+                var firebaseObj = await _client.Child("recipes")
+                                               .PostAsync<Recipe>(recipe);
+
+                var data = firebaseObj.Object;
+                data.Key = firebaseObj.Key;
+
+                return data;
             }
             catch (Exception)
             {
@@ -106,14 +113,44 @@ namespace FirebaseAuthDemo.Services
 
         #region Favorites CRUD operations
 
-        /// <summary>
-        /// An asynchronous operation to retrieve a user's favorited recipes.
-        /// The task result consists of dictionary of recipe ID keys and boolean 
-        /// values (indicating if the recipe was favorited).
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        public async Task<IDictionary<string, bool>> GetUserFavoritesAsync(string userId)
+        ///// <summary>
+        ///// An asynchronous operation to retrieve a user's favorited recipes.
+        ///// The task result consists of dictionary of recipe ID keys and boolean 
+        ///// values (indicating if the recipe was favorited).
+        ///// </summary>
+        ///// <param name="userId"></param>
+        ///// <returns></returns>
+        //public async Task<IDictionary<string, bool>> GetUserFavoritesAsync(string userId)
+        //{
+        //    try
+        //    {
+        //        var result = await _client.Child("users")
+        //                                  .Child(userId)
+        //                                  .Child("favorites")
+        //                                  .OnceAsync<bool>();
+                
+        //        if (result == null || result.Count == 0)
+        //        {
+        //            return null;
+        //        }
+
+        //        var favorites = result.ToDictionary(o => (o.Key),
+        //                                            o => (o.Object));
+
+        //        if (favorites.Count == 0)
+        //        {
+        //            return null;
+        //        }
+
+        //        return favorites;
+        //    }
+        //    catch
+        //    {
+        //        throw;
+        //    }
+        //}
+
+        public async Task<IEnumerable<string>> GetUserFavoritesAsync(string userId)
         {
             try
             {
@@ -121,16 +158,15 @@ namespace FirebaseAuthDemo.Services
                                           .Child(userId)
                                           .Child("favorites")
                                           .OnceAsync<bool>();
-                
+
                 if (result == null || result.Count == 0)
                 {
                     return null;
                 }
 
-                var favorites = result.ToDictionary(o => (o.Key),
-                                                    o => (o.Object));
+                var favorites = result.Select(o => o.Key);
 
-                if (favorites.Count == 0)
+                if (favorites.Count() < 1)
                 {
                     return null;
                 }

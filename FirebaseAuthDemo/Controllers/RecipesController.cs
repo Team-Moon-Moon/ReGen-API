@@ -54,13 +54,13 @@ namespace FirebaseAuthDemo.Controllers
         /// [Requires authentication] Adds a recipe to ReGen.
         /// </summary>
         /// <param name="recipeForm">The formatted request body as JSON.</param>
-        /// <returns>Http status code 204 indicating success.</returns>
-        /// <response code="204">The request is successful.</response>
+        /// <returns>Http status code 200 indicating success, along with the newly-created recipe.</returns>
+        /// <response code="200">Returns the newly-created recipe.</response>
         /// <response code="400">The request body is invalid.</response>
         /// <response code="401">The request is missing an authorization header.</response>
         [Authorize]
         [HttpPut]
-        [ProducesResponseType(204)]
+        [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(401)]
         public async Task<IActionResult> AddRecipe([FromBody]RecipeForm recipeForm)
@@ -68,10 +68,10 @@ namespace FirebaseAuthDemo.Controllers
             var authHeaderContents = Request.Headers["Authorization"];
             var accessToken = authHeaderContents.ToString().Split(' ')[1];
             var uid = await _authClient.GetUid(accessToken);
+            
+            var recipe = await _recipeClient.CreateRecipeAsync(uid, recipeForm);
 
-            await _recipeClient.CreateRecipeAsync(uid, recipeForm);
-
-            return NoContent();
+            return Ok(recipe);
         }
 
         /// <summary>

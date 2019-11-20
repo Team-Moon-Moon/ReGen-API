@@ -11,7 +11,7 @@ namespace FirebaseAuthDemo.Services
     {
         Task<Recipe> GetRecipeAsync(string recipeId);
 
-        Task CreateRecipeAsync(string userId, RecipeForm recipeForm);
+        Task<Recipe> CreateRecipeAsync(string userId, RecipeForm recipeForm);
 
         Task UpdateRecipeAsync(string userId, string recipeId, RecipeForm recipeForm);
 

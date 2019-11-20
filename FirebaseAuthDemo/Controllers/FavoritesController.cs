@@ -33,7 +33,7 @@ namespace FirebaseAuthDemo.Controllers
         /// <summary>
         /// [Requires authentication] Returns a collection of the user's favorited recipes.
         /// </summary>
-        /// <returns>HTTP status code 200 with a dictionary of recipe IDs and ONLY 'true' values (no 'false' values), or 204 if no favorites found.</returns>
+        /// <returns>HTTP status code 200 with a list of 'favorited' recipe IDs, or 204 if no favorites found.</returns>
         /// <response code="200">Returns a list of favorited recipe IDs.</response>
         /// <response code="204">The user has no recipes favorited.</response>
         /// <response code="401">The request is missing an authorization header.</response>
@@ -47,7 +47,7 @@ namespace FirebaseAuthDemo.Controllers
             var accessToken = authHeaderContents.ToString().Split(' ')[1];
             var uid = await _authClient.GetUid(accessToken);
 
-            IDictionary<string, bool> favorites = await _dbClient.GetUserFavoritesAsync(uid);
+            IEnumerable<string> favorites = await _dbClient.GetUserFavoritesAsync(uid);
 
             if (favorites != null)
                 return Ok(favorites);

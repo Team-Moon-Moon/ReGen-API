@@ -18,7 +18,7 @@ namespace FirebaseAuthDemo.Services
 
         Task<Recipe> GetRecipeAsync(string recipeId);
 
-        Task AddRecipeAsync(Recipe recipe);
+        Task<Recipe> AddRecipeAsync(Recipe recipe);
 
         Task UpdateRecipeAsync(Recipe recipe);
 
@@ -28,7 +28,8 @@ namespace FirebaseAuthDemo.Services
 
         #region 'Favorites' Operations
 
-        Task<IDictionary<string, bool>> GetUserFavoritesAsync(string userId);
+        //Task<IDictionary<string, bool>> GetUserFavoritesAsync(string userId);
+        Task<IEnumerable<string>> GetUserFavoritesAsync(string userId);
 
         Task AddUserFavoriteAsync(string userId, string recipeId);
 

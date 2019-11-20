@@ -105,8 +105,8 @@
             [Requires authentication] Adds a recipe to ReGen.
             </summary>
             <param name="recipeForm">The formatted request body as JSON.</param>
-            <returns>Http status code 204 indicating success.</returns>
-            <response code="204">The request is successful.</response>
+            <returns>Http status code 200 indicating success, along with the newly-created recipe.</returns>
+            <response code="200">Returns the newly-created recipe.</response>
             <response code="400">The request body is invalid.</response>
             <response code="401">The request is missing an authorization header.</response>
         </member>
@@ -216,15 +216,6 @@
             <summary>
             Construct a new rating with default values.
             </summary>
-        </member>
-        <member name="M:FirebaseAuthDemo.Services.FirebaseDatabaseService.GetUserFavoritesAsync(System.String)">
-            <summary>
-            An asynchronous operation to retrieve a user's favorited recipes.
-            The task result consists of dictionary of recipe ID keys and boolean 
-            values (indicating if the recipe was favorited).
-            </summary>
-            <param name="userId"></param>
-            <returns></returns>
         </member>
         <member name="M:FirebaseAuthDemo.Services.FirebaseDatabaseService.UpdateUserRating(System.String,FirebaseAuthDemo.Models.Rating@,System.Int32)">
             <summary>

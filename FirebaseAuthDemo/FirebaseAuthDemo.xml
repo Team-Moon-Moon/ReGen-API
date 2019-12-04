@@ -13,7 +13,7 @@
             <summary>
             [Requires authentication] Returns a collection of the user's favorited recipes.
             </summary>
-            <returns>HTTP status code 200 with a dictionary of recipe IDs and ONLY 'true' values (no 'false' values), or 204 if no favorites found.</returns>
+            <returns>HTTP status code 200 with a list of 'favorited' recipe IDs, or 204 if no favorites found.</returns>
             <response code="200">Returns a list of favorited recipe IDs.</response>
             <response code="204">The user has no recipes favorited.</response>
             <response code="401">The request is missing an authorization header.</response>

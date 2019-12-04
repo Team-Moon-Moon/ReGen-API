@@ -79,7 +79,7 @@ namespace FirebaseAuthDemo.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> GetReviews(string recipeId, [FromQuery]string start, [FromQuery]int size = 5)
+        public async Task<IActionResult> GetReviews(string recipeId, [FromQuery]string start = "", [FromQuery]int size = 5)
         {
             var results = await _reviewClient.GetReviewsPageAsync(recipeId, start, size);
 

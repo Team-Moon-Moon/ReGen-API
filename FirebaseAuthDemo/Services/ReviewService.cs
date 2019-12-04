@@ -76,8 +76,13 @@ namespace FirebaseAuthDemo.Services
                         Timestamp = DateTime.Now
                     };
 
-                int? existingRating = await _dbClient.GetUserRatingAsync(userId, recipeId);
-                if (existingRating == null)
+                //int? existingRating = await _dbClient.GetUserRatingAsync(userId, recipeId);
+                //if (existingRating == null)
+                //{
+                //    await _dbClient.AddUserRatingAsync(userId, review.RecipeId, review.Rating);
+                //}
+                int existingRating = await _dbClient.GetUserRatingAsync(userId, recipeId);
+                if (existingRating == 0)
                 {
                     await _dbClient.AddUserRatingAsync(userId, review.RecipeId, review.Rating);
                 }
